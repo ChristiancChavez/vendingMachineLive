@@ -1,11 +1,11 @@
 import React from 'react'
-import Button from '@material-ui/core/Button';
-import { Typography, Badge, Card } from '@mui/material';
+import { Typography, Badge, Card, Button } from '@mui/material';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import PropTypes from 'prop-types';
 
 const CoinMethods = ({ onClick, price, updateBadge, coinCount, text }) => { 
 
+    // Inserted coin into insertedMoney state 
     const handleClick = () => {
         if (coinCount > 0) {
             onClick();
@@ -13,6 +13,7 @@ const CoinMethods = ({ onClick, price, updateBadge, coinCount, text }) => {
         }
     };
 
+    // Update the amount of coins remaining
     const updateBadgeContent = (coinCount) => {
         if (coinCount === 0) {
             return "/";

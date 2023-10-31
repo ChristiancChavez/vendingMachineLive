@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Grid, Typography } from '@mui/material';
-import { Button } from '@material-ui/core';
+import { Box, Grid, Typography, Button } from '@mui/material';
 import CoinMethods from '../components/coinMethods/CoinMethods';
 import Product from '../components/product/Product';
 import ProductSelected from '../components/productSelected/ProductSelected';
+import MoneyTrack from '../components/moneyTrack/MoneyTrack';
 
 const VendingMachine = () => {
     // Initialize state from localStorage or use default values
@@ -19,7 +19,7 @@ const VendingMachine = () => {
         { value: 0.10, coins: 10, text: '$0.10' },
         { value: 0.25, coins: 10, text: '$0.25' },
         { value: 1.00, coins: 10, text: '$1.00' }
-    ];    
+    ];
 
     const [availableProducts, setAvailableProducts] = useState(initialAvailableProducts);
     const [coinButtons, setCoinButtons] = useState(initialCoinButtons);
@@ -45,24 +45,30 @@ const VendingMachine = () => {
         }
     };
 
+    // Reset coins to initial state
     const resetCoins = () => {
         setCoinButtons(initialCoinButtons);
     };
 
+    // Return coins o the customer
     const handleReturnCoin = () => {
         setCustomermoney(prev => prev + insertedMoney);
         setInsertedMoney(0);
         resetCoins();
     };
 
+    // Insert coin into vending machine
     const handleInsertedMoney = (amount) => {
         const fixedInsertedMoney = (insertedMoney.toFixed(2) * 100 + amount.toFixed(2) * 100) / 100;
         setInsertedMoney(fixedInsertedMoney);
     };
 
-    const insertedMoneyRounded = insertedMoney.toFixed(2);
+    // Format it to two decimal places
+    const insertedMoneyRounded = insertedMoney.toFixed(2); 
 
     const customerMoneyRounded = customerMoney.toFixed(2);
+    
+    // Update (diminsh)the amount of coin when it's inserted
     const updateBadge = (coinValue) => {
         setCoinButtons((prevButtons) =>
             prevButtons.map((button) => {
@@ -74,9 +80,17 @@ const VendingMachine = () => {
         );
     };   
 
+    // Calculate the change as the the difference between the inserted money and product price
+    const calculateChange = (productPrice) => {
+        const change = insertedMoney - productPrice;
+        return change.toFixed(2);
+    };
+
     return (
-        <Box>
-            <h1>Vending Machine</h1>
+        <Box    
+            sx={{ height: '100vh', background: 'gray', textAlign: 'center' }}
+        >
+            <Typography variant="h1" sx={{ color: 'lightBlue' }}>Vending Machine</Typography>
             <Grid 
                 container
                 direction="row"
@@ -120,14 +134,16 @@ const VendingMachine = () => {
                 alignItems="center"
                 sx={{ marginTop: 2 }}
             >
-                <Grid item>
-                    <Typography sx={{ fontSize: 20 }}>Inserted Money</Typography>
-                    <Typography data-testid='inserted-money' sx={{ fontSize: 20 }}>{insertedMoneyRounded}</Typography>
-                </Grid>
-                <Grid item>
-                    <Typography sx={{ fontSize: 20 }}>Customer Money</Typography>
-                    <Typography data-testid='customer-money' sx={{ fontSize: 20 }}>{customerMoneyRounded}</Typography>
-                </Grid>
+                <MoneyTrack 
+                    text='Inserted Money'
+                    testId='inserted-money'
+                    value={insertedMoneyRounded}
+                />
+                <MoneyTrack 
+                    text='Customer Money'
+                    testId='customer Money'
+                    value={customerMoneyRounded}
+                />
                 <Grid item>
                     <Button
                         onClick={handleReturnCoin} 
@@ -140,7 +156,14 @@ const VendingMachine = () => {
                     </Button>
                 </Grid>
             </Grid>
-            {selectedProduct && <ProductSelected selectedProduct={selectedProduct} />}
+            <Grid>
+                {selectedProduct && 
+                    <ProductSelected 
+                        selectedProduct={selectedProduct} 
+                        change={calculateChange(selectedProduct.price)} 
+                    />
+                }
+            </Grid>
         </Box>
     )
 };

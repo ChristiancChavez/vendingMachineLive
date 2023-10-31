@@ -7,6 +7,8 @@ import PropTypes from 'prop-types';
 
 const Product = ({ item, disabled, onClick } ) => {
     const { name, price, count } = item;
+
+    //Get the product selected
     const handleProductOnClick = () =>{
         onClick(item);
     };
